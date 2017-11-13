@@ -1,0 +1,59 @@
+server:
+  port: 9000
+  
+  health:
+    sensitive: false
+hystrix:
+  threadpool:
+    default:
+      # Maximum number of concurrent requests when using thread pools (Default: 10)
+      coreSize: 100
+      # Maximum LinkedBlockingQueue size - -1 for using SynchronousQueue (Default: -1)
+      maxQueueSize: -1
+      # Queue size rejection threshold (Default: 5)
+      queueSizeRejectionThreshold: 5
+  command:
+    default:
+      circuitBreaker:
+        sleepWindowInMilliseconds: 30000
+        requestVolumeThreshold: 1
+        errorThresholdPercentage: 0
+        forceOpen: false
+        forceClosed: false
+        
+      execution:
+        isolation:
+#          strategy: SEMAPHORE, no thread pool but timeout handling stops to work
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 1000
+           
+endpoints:
+  actuator:
+    enabled: true
+    path: /
+    sensitive: false
+  auditevents:
+    enabled: true
+  health:
+    sensitive: false            
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    lease-expiration-duration-in-seconds: 20
+    appname: demo
+    health-check-url-path: /application/health
+    home-page-url-path: /application/info
+    status-page-url-path: :/application/info
+    metadataMap:
+     zone: zone1
+
+  client:
+  
+    service-url:
+     defaultZone: http://localhost:9999/eureka/,http://localhost:9998/eureka/
+    prefer-same-zone-eureka: true
+logging:
+  level:
+    com.netflix.discovery: 'ERROR'            
+    com.netflix.ribbon : TRACE
